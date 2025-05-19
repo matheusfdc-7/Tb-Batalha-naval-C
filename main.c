@@ -28,27 +28,163 @@ void mostrarTabuleiro(char tabuleiro[TAMA][TAMA], int mostrarNavios) {
                 printf("%c ", tabuleiro[i][j]);
             }
         }
-        // garante que cada linha do tabuleiro seja impressa corretamente.
+        // garante que cada linha do tabuleiro seja impressa corretamente 
         printf("\n");
     }
 }
-//funcao para posicionar os navios no tabuleiro.
-void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador) {
-    int x, y, i = 0;
-    printf("Jogador %d, posicione seus %d navios:\n", jogador, NAVIOS);
-    while (i < NAVIOS) {
-        printf("Navio %d - Digite linha e coluna (0 a 7): ", i + 1);
-        scanf("%d %d", &x, &y);
+
+
+//funcao para preencher a matriz de posicao dos navios e colocar no tabuleiro
+int preencherMatriz(int xi, int multiplicadorX, int yi, int multiplicadorY, int tamNavio, char tabuleiro[TAMA][TAMA]){
+    
+    int posicao[tamNavio][2]; // linhas são o tamanho do navio, colunas [0]-->x [1]-->y
+    
+    //preenche a coluna x com valores de x para cada espaço que o navio ocupa
+    for(int i = 0; i < tamNavio; i++){
+        posicao[i][0] = xi + (multiplicadorX*i); 
+    } 
         
-        if (x >= 0 && x < TAMA && y >= 0 && y < TAMA && tabuleiro[x][y] == '-') {
-            tabuleiro[x][y] = 'N';
-            i++;
-        } else {
-            printf("Posição invalida ou ocupada. Tente novamente.\n");
+    //preenche a coluna y com valores de y para cada espaço que o navio ocupa
+    for(int i = 0; i < tamNavio; i++){
+        posicao[i][1] = yi + (multiplicadorY*i);  
+        
+    } 
+    
+    //checa para ver se todos os epaços estão livres
+    for(int i = 0; i < tamNavio; i++){
+        int x = posicao[i][0]; //pega os valores de x de cada espaço que o navio ocupa
+        int y = posicao[i][1]; //pega os valores de y de cada espaço que o navio ocupa
+        if( tabuleiro[x][y] != '-'){
+            return 0;
         }
     }
+    
+    //preenche os espaços
+    for(int i = 0; i < tamNavio; i++){
+        int x = posicao[i][0];
+        int y = posicao[i][1];
+        if( tabuleiro[x][y] == '-'){
+            tabuleiro[x][y] = 'N';
+        }
+    }
+    printf("\n");
+    return 1;
 }
 
+//funcao para mostrar o texto e receber xi, yi e direcao
+int mostraTexto(int i, int tamNavio, int *xi, int *yi, char *d){
+    printf("\n");
+    printf("Navio %i, ocupa %i posições.\n", i+1, tamNavio);
+    
+    printf("Escolha o número da linha(0 a 7): ");
+    scanf("%d", xi);
+    if ( *xi < 0 || *xi >= TAMA ) {
+        return 0;
+    }
+    printf("Escolha o número da coluna(0 a 7): ");
+    scanf("%d", yi);
+    if ( *yi < 0 || *yi >= TAMA ) {
+        return 0;
+    }
+    
+    printf("Digite a direção do navio (W, A, S, D): ");
+    scanf(" %c", d);
+    printf("\n");
+    return 1;
+}
+
+//funcao para checar para ver se a direçao é aceita e se o navio cabe no tabuleiro
+int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int yi, int tamNavio){
+    
+    //se for para cima
+    if(d == 'w' || d == 'W'){ 
+        *multiplicadorX = -1; //vai multiplicar a soma para diminuir o x
+        *multiplicadorY = 0; //n vai influenciar
+        
+        //checa para ver se o navio n saiu do tabuleiro
+        if( (xi - tamNavio) >= 0 ){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    if(d == 's' || d == 'S'){
+        *multiplicadorX = 1; //vai multiplicar a soma para aumentar o x
+        *multiplicadorY = 0;
+        
+        if( (xi + tamNavio) < TAMA ){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    
+    if(d == 'd' || d == 'D'){
+        *multiplicadorX = 0;
+        *multiplicadorY = 1; //vai multiplicar a soma para aumentar o y
+        
+        if( (yi + tamNavio) < TAMA ){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    
+    if(d == 'a' || d == 'A'){
+        *multiplicadorX = 0;
+        *multiplicadorY = -1; //vai multiplicar a soma para diminuir o y
+        
+        if( (yi - tamNavio) >= 0 ){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    return 0;
+    
+}
+
+
+// V2
+//funcao para posicionar os navios no tabuleiro.
+void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador){
+    int i = 0;
+    int tamNavio = 2;
+    char d;
+    
+    printf("Jogador %d, posicione seus %d navios:\n", jogador, NAVIOS);
+    mostrarTabuleiro(tabuleiro, 1);
+    
+    while (i < NAVIOS) {
+        int xi = 0, yi = 0;
+        int multiplicadorX = 0, multiplicadorY = 0;
+        
+        if( mostraTexto(i, tamNavio, &xi, &yi, &d) == 1){
+            if( checkDirecao(d, &multiplicadorX, &multiplicadorY, xi, yi, tamNavio) == 1 ){
+                if( preencherMatriz(xi, multiplicadorX, yi, multiplicadorY, tamNavio, tabuleiro) == 1 ){
+                    mostrarTabuleiro(tabuleiro, 1);
+                    tamNavio++;
+                    i++;
+                } else {
+                printf("Posição inválida ou ocupada, tente novamente\n");
+                mostrarTabuleiro(tabuleiro, 1);
+                }
+            } else {
+                printf("Posição inválida ou ocupada, tente novamente\n");
+                mostrarTabuleiro(tabuleiro, 1);
+            }
+        } else {
+            printf("Posição inválida ou ocupada, tente novamente\n");
+            mostrarTabuleiro(tabuleiro, 1);
+        }
+        
+            
+    }
+    
+    
+}
 
 
 int main(){
