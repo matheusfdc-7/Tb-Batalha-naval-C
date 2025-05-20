@@ -5,6 +5,10 @@
 #define TAMA 8
 #define NAVIOS 3
 
+// função para limpar o terminal;
+void limparTerminal(){
+    system("cls");
+}
 //funçao para criar o tabuleiro.
 void criarTabuleiro(char tabuleiro[TAMA][TAMA]) {
     for (int i = 0; i < TAMA; i++) {
@@ -13,7 +17,7 @@ void criarTabuleiro(char tabuleiro[TAMA][TAMA]) {
         }
     }
 }
-//função para mostrar o tabuleiro para o usuario e esconder os navios criados se jagador E chamarmos mostrarTabuleiro(tabuleiro, 0) se for 1 ele mostra os N.
+//função para mostrar o tabuleiro para o usuario e esconder os navios criados;
 void mostrarTabuleiro(char tabuleiro[TAMA][TAMA], int mostrarNavios) {
     //aqui mostra a parte de cima da tabela
     printf("  0 1 2 3 4 5 6 7\n");
@@ -70,7 +74,6 @@ int preencherMatriz(int xi, int multiplicadorX, int yi, int multiplicadorY, int 
     printf("\n");
     return 1;
 }
-
 //funcao para mostrar o texto e receber xi, yi e direcao
 int mostraTexto(int i, int tamNavio, int *xi, int *yi, char *d){
     printf("\n");
@@ -92,7 +95,6 @@ int mostraTexto(int i, int tamNavio, int *xi, int *yi, char *d){
     printf("\n");
     return 1;
 }
-
 //funcao para checar para ver se a direçao é aceita e se o navio cabe no tabuleiro
 int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int yi, int tamNavio){
     
@@ -141,13 +143,8 @@ int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int y
             return 0;
         }
     }
-
-    return 0;
-    
+    return 0;   
 }
-
-
-// V2
 //funcao para posicionar os navios no tabuleiro.
 void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador){
     int i = 0;
@@ -178,16 +175,46 @@ void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador){
         } else {
             printf("Posição inválida ou ocupada, tente novamente\n");
             mostrarTabuleiro(tabuleiro, 1);
-        }
-        
-            
+        }     
     }
-    
-    
+}
+//funcao simples para por navios na vez do pc;
+void colocarNaviosCpu(char tabuleiro[TAMA][TAMA]){
+    int x,y, i=0;
+    while (i < NAVIOS){
+        x = rand() % TAMA;
+        y = rand() % TAMA;
+        if(tabuleiro[x][y] == '-'){
+            tabuleiro[x][y] = 'N';
+            i++;
+        }
+    }
 }
 
-
-int main(){
+//função para atacar ele vai pecorrer o tabuleiro e verificar onde tem um Navio "N" se tizer marca X e retorna 1 indicando que o ataque deu certo;
+int atacar(char tabuleiro[TAMA][TAMA], int x , int y){
+    if (tabuleiro[x][y]== 'N'){
+        tabuleiro[x][y] = 'X';
+        return 1;
+    } else if (tabuleiro[x][y] == '-'){
+        tabuleiro[x][y] = 'O';
+    }
+    return 0;
+}
+//função para contar quantos Navios restão no tabuleiro;
+int contNavios(char tabuleiro[TAMA][TAMA]){
+    int contador = 0;
+    for (int i = 0; i < TAMA; i++){
+        for (int j = 0; j < TAMA; j++){
+            if (tabuleiro[i][j] == 'N'){
+                contador ++;                
+            }
+        }
+    }
+    return contador;
+}
+//função menu;
+int menu(){
     char tabuleiro1[TAMA][TAMA];
     char tabuleiro2[TAMA][TAMA];
     int modo, dificuldade;
@@ -195,17 +222,18 @@ int main(){
     int fim = 0;
     int x, y;
     // usado apenas para o PC lembrar os acertos
-    // int memoria[2] = {-1, -1}; 
+    int memoria[2] = {-1, -1}; 
 
     // Inicializa a semente com o tempo atual para que o rand() funcione sempre trocando os números aleatórios sem repetir o mesmo padrão.
     srand(time(NULL));
-    //
+    
     criarTabuleiro(tabuleiro1);
     criarTabuleiro(tabuleiro2);
+    limparTerminal();
     //enquanto for diferente de 1 ou 2 ele continua o loop 
     while(modo != 1 && modo != 2){
         printf("=== BATALHA NAVAL ===\n");
-        printf("1 - Jogador vs Jogador\n2 - Jogador vs PC\nEscolha o modo: ");
+        printf("1 - Jogador vs Jogador\n 2- Jogador vs PC\nEscolha o modo: ");
         scanf("%d", &modo);
         //se for diferente ele mostra na tela a mensagem.
         if (modo !=2 && modo !=1){
@@ -217,9 +245,83 @@ int main(){
             scanf("%d", &dificuldade);
         }
     //chamar a função para e criar os navios
-        posicionarNavios(tabuleiro1, 1);
+    posicionarNavios(tabuleiro1, 1);
+    if (modo == 2){
+        colocarNaviosCpu(tabuleiro2);
+    } else {
+        posicionarNavios(tabuleiro2, 2);
+    }
+    while (!fim){
+        printf("\n--- Jogador %d ---\n", jogador);
+        if (jogador == 1 || modo == 1) {
+            //se o jogador for o 1 e o modo 1 ele mostra tabuleiro do jogador 2 ou 1 e assim do 1 ou 2, o zero no final e para dizer a funcao esconder os navios.
+            mostrarTabuleiro(jogador == 1 ? tabuleiro2 : tabuleiro1, 0);
+        }
+        //aqui e se o modo 2 e o jogo for o 2 comeca o jogo jogador vc CPU;
+        if (modo == 2 && jogador == 2){
+        
+        //se nao for o jogo 2 e modo 2 e o humano entao ele pede as condernadas para o ataque;
+        }else {
+            printf("Digite linha e coluna para atacar: ");
+            scanf("%d %d", &x, &y);
+            //verifica se for menor que zero ou maior que o tamanho da matriz ele retorna erro;
+            if (x < 0 || x >= TAMA || y < 0 || y >= TAMA){
+                printf("Cordenadas Invalidas.\n");
+                continue;
+            }
+            //verifica a vez de jogar se for do jogador 1 ele entrar aqui;
+            if (jogador == 1){
+                //verifica se no tabuleiro do jogador 2 voce ja atacou o mar ou acertou um navio;
+                if (tabuleiro2[x][y] == 'X' || tabuleiro2[x][y] == 'O'){
+                    printf("Posicao ja atacada.\n");
+                    continue;
+                }
+                //aqui chama a funcao atacar a funcao ataca no tabuleiro 2 na posição dita pelo usuario x e y.
+                if (atacar(tabuleiro2, x ,y)){
+                   printf("BOOM! Voce acertou!\n");
+                }else{
+                    printf("Agua! Voce errou...\n");
+                }
+                if (contNavios(tabuleiro2) == 0){
+                    printf("\nJogador 1 venceu\n");
+                    fim = 1;
+                }  
+            //jogador 2:   
+            }else{
+                if (tabuleiro1[x][y] == 'X' || tabuleiro1[x][y] == 'O'){
+                    printf("Posicao ja atacada.\n");
+                    continue;
+                }
+                if (atacar(tabuleiro1, x ,y)){
+                    printf("BOOM! Voce acertou!\n");
+                }else{
+                    printf("Agua! Voce errou...\n");
+                }
+               if (contNavios(tabuleiro1) == 0){
+                    printf("\nJogador 2 venceu\n");
+                    fim = 1;
+                }     
+            }  
+        }
+        
+        //se o jogo não acabou então
+        if (!fim) {
+            //isso e um if e else que garente que sempre jogador vai mudar enquanto o jogo não terminar
+            jogador = (jogador == 1) ? 2 : 1;
+        }
+    }
+    //parte que ira retorna 1 ou 0 para que no main diga se vai reniciar o jogo ou não
+    int jogarNovamente;
+    printf("Jogar novamente? (1 = sim, 0 = nao): ");
+    scanf("%d", &jogarNovamente);
+    return jogarNovamente;
+}
 
-
-
+int main(){
+    // loop para jogar novamente limpando o terminal com a o outra função se a resposta for sim (1);
+    while (menu() == 1) {
+        limparTerminal();
+    }
+    printf("Obrigado por jogar!\n");
     return 0;
 }
