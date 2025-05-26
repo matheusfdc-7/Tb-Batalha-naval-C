@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -5,10 +6,11 @@
 #define TAMA 8
 #define NAVIOS 3
 
-// função para limpar o terminal;
+// função para limpar o terminal 
 void limparTerminal(){
     system("cls");
 }
+
 //funçao para criar o tabuleiro.
 void criarTabuleiro(char tabuleiro[TAMA][TAMA]) {
     for (int i = 0; i < TAMA; i++) {
@@ -145,12 +147,44 @@ int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int y
     }
     return 0;   
 }
-//funcao para posicionar os navios no tabuleiro.
-void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador){
+//função para colocar os navios automaticamente no codigo:
+void colocarNaviosAleatorios(char tabuleiro[TAMA][TAMA]) {
+    int i = 0;
+    int tamNavio = 2;
+    while (i < NAVIOS) {
+        int xi = rand() % TAMA;
+        int yi = rand() % TAMA;
+        int direcao = rand() % 4;
+        int multiplicadorX = 0, multiplicadorY = 0;
+        char d;
+
+        switch (direcao) {
+            case 0: d = 'W'; break;
+            case 1: d = 'S'; break;
+            case 2: d = 'A'; break;
+            case 3: d = 'D'; break;
+        }
+
+        if (checkDirecao(d, &multiplicadorX, &multiplicadorY, xi, yi, tamNavio)) {
+            if (preencherMatriz(xi, multiplicadorX, yi, multiplicadorY, tamNavio, tabuleiro)) {
+                tamNavio++;
+                i++;
+            }
+        }
+    }
+}
+//funcao para posicionar os navios no tabuleiro manualmente:
+void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador,int automatico){
+    if (automatico) {
+    colocarNaviosAleatorios(tabuleiro);
+    printf("Navios do jogador %d foram posicionados automaticamente.\n", jogador);
+    mostrarTabuleiro(tabuleiro, 1);
+    return;
+}
     int i = 0;
     int tamNavio = 2;
     char d;
-    
+
     printf("Jogador %d, posicione seus %d navios:\n", jogador, NAVIOS);
     mostrarTabuleiro(tabuleiro, 1);
     
@@ -175,20 +209,8 @@ void posicionarNavios(char tabuleiro[TAMA][TAMA], int jogador){
         } else {
             printf("Posição inválida ou ocupada, tente novamente\n");
             mostrarTabuleiro(tabuleiro, 1);
-        }     
-    }
-}
-//funcao simples para por navios na vez do pc;
-void colocarNaviosCpu(char tabuleiro[TAMA][TAMA]){
-    int x,y, i=0;
-    while (i < NAVIOS){
-        x = rand() % TAMA;
-        y = rand() % TAMA;
-        if(tabuleiro[x][y] == '-'){
-            tabuleiro[x][y] = 'N';
-            i++;
-        }
-    }
+        }         
+    }   
 }
 
 //função para atacar ele vai pecorrer o tabuleiro e verificar onde tem um Navio "N" se tizer marca X e retorna 1 indicando que o ataque deu certo;
@@ -201,7 +223,7 @@ int atacar(char tabuleiro[TAMA][TAMA], int x , int y){
     }
     return 0;
 }
-//função para contar quantos Navios restão no tabuleiro;
+//função para contar quantos Navios restam no tabuleiro;
 int contNavios(char tabuleiro[TAMA][TAMA]){
     int contador = 0;
     for (int i = 0; i < TAMA; i++){
@@ -218,6 +240,7 @@ int menu(){
     char tabuleiro1[TAMA][TAMA];
     char tabuleiro2[TAMA][TAMA];
     int modo, dificuldade;
+    int automatico1 = 0, automatico2 = 0;
     int jogador = 1;
     int fim = 0;
     int x, y;
@@ -240,16 +263,23 @@ int menu(){
             printf("Por favor digite um numero valido para selecao:\n");
         }
     }
-        if(modo == 2) {
-            printf("Nível de dificuldade:\n1 - Fácil\n2 - Difícil\nEscolha: ");
-            scanf("%d", &dificuldade);
-        }
+    if(modo == 2) {
+        printf("Nível de dificuldade:\n1 - Fácil\n2 - Difícil\nEscolha: ");
+        scanf("%d", &dificuldade);
+    }
+    printf("Jogador 1 deseja posicionar os navios automaticamente? (1 = sim, 0 = nao): ");
+    scanf("%d", &automatico1);
+   
+    if (modo == 1) {
+        printf("Jogador 2 deseja posicionar os navios automaticamente? (1 = sim, 0 = nao): ");
+        scanf("%d", &automatico2);
+    }
     //chamar a função para e criar os navios
-    posicionarNavios(tabuleiro1, 1);
+    posicionarNavios(tabuleiro1, 1, automatico1);   
     if (modo == 2){
-        colocarNaviosCpu(tabuleiro2);
+        colocarNaviosAleatorios(tabuleiro2);
     } else {
-        posicionarNavios(tabuleiro2, 2);
+        posicionarNavios(tabuleiro2, 2, automatico2);
     }
     while (!fim){
         printf("\n--- Jogador %d ---\n", jogador);
@@ -259,7 +289,12 @@ int menu(){
         }
         //aqui e se o modo 2 e o jogo for o 2 comeca o jogo jogador vc CPU;
         if (modo == 2 && jogador == 2){
-        
+            //a função jogar cpu vailogo a baixo, ai tem um exemplo comentado:
+            // jogarCpu(tabuleiro1, dificuldade, memoria);
+            if (contNavios(tabuleiro1) == 0){
+                printf("\n CPU Venceu!.\n");
+                fim = 1;
+            }
         //se nao for o jogo 2 e modo 2 e o humano entao ele pede as condernadas para o ataque;
         }else {
             printf("Digite linha e coluna para atacar: ");
@@ -292,6 +327,8 @@ int menu(){
                     printf("Posicao ja atacada.\n");
                     continue;
                 }
+                //aqui chama a funcao atacar a funcao ataca no tabuleiro 2 na posição dita pelo usuario x e y.
+
                 if (atacar(tabuleiro1, x ,y)){
                     printf("BOOM! Voce acertou!\n");
                 }else{
