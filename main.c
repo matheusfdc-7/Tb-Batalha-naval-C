@@ -299,7 +299,7 @@ int logicaCPU(char tabuleiro[TAMA][TAMA]){
         if( atacar(tabuleiro, x, y ) == 1 ){
             acertos[contAcertos][0] = x;
             acertos[contAcertos][1] = y;
-            
+
             // atualiza contadores
             contAcertos++;
             cont++;
@@ -324,7 +324,7 @@ int logicaCPU(char tabuleiro[TAMA][TAMA]){
             // determina como base o ultimo acerto que houve
             x = acertos[contAcertos-1][0];
             y = acertos[contAcertos-1][1];
-            
+
             // determina a direção em que a CPU vai continuar atacando
             int d = rand() % 4; // sorteia uma direção aleatória
 
@@ -377,7 +377,7 @@ int logicaCPU(char tabuleiro[TAMA][TAMA]){
             if( atacar(tabuleiro, x, y) == 1 ){
                 acertos[contAcertos][0] = x;
                 acertos[contAcertos][1] = y;
-                
+
                 errou = 0; //zera variavel para reutilizar
                 // atualiza os contadores
                 contAcertos++;
@@ -388,7 +388,7 @@ int logicaCPU(char tabuleiro[TAMA][TAMA]){
                 erros[contErros][1] = y;
 
                 errou++;
-                
+
                 // atualiza os contadores
                 contErros++;
                 cont++;
@@ -483,19 +483,46 @@ int menu(){
         // se o modo == 2 e for a vez do jogador 2, é a vez da CPU jogar
         if (modo == 2 && jogador == 2){
 
-            if( logicaCPU(tabuleiro1) == 1 ){
-                printf("BOOM! Seu navio foi acertado!\n");
+            if(dificuldade == 1){ //se for facil
+
+                int a, b;
+                do{
+                    a = rand() % TAMA;
+                    b = rand() % TAMA;
+                } while( tabuleiro1[a][b] == 'X' || tabuleiro1[a][b] == 'O' ); //sorteia numeros aleatorios ate encontrar um vazio
+
+
+                if(atacar(tabuleiro1, a, b) == 1) {
+                    printf("BOOM! Seu navio foi acertado!\n");
+                } else {
+                    printf("Agua! Seus navios estão a salvo!\n");
+                }
+
+                // conta quantos navios tem para ver se o jogo acabou
+                if ( contNavios(tabuleiro1) == 0 ){
+                    printf("\nComputador venceu\n");
+                    fim = 1;
+                } else {
+                    mostrarTabuleiro(tabuleiro1, 1);
+                }
+
             } else {
-                printf("Agua! Seus navios estão a salvo!\n");
+                if( logicaCPU(tabuleiro1) == 1 ){
+                printf("BOOM! Seu navio foi acertado!\n");
+                } else {
+                    printf("Agua! Seus navios estão a salvo!\n");
+                }
+
+                // conta quantos navios tem para ver se o jogo acabou
+                if ( contNavios(tabuleiro1) == 0 ){
+                    printf("\nComputador venceu\n");
+                    fim = 1;
+                } else {
+                    mostrarTabuleiro(tabuleiro1, 1);
+                }
+
             }
 
-            // conta quantos navios tem para ver se o jogo acabou
-            if ( contNavios(tabuleiro1) == 0 ){
-                printf("\nComputador venceu\n");
-                fim = 1;
-            } else {
-                mostrarTabuleiro(tabuleiro1, 1);
-            }
 
         } else { // se não for modo 2, pede as coordenadas para o ataque
 
