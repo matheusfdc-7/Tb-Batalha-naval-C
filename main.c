@@ -19,7 +19,7 @@ void criarTabuleiro(char tabuleiro[TAMA][TAMA]) {
         }
     }
 }
-//função para mostrar o tabuleiro para o usuario e esconder os navios.
+//função para mostrar o tabuleiro para o usuario e esconder os navios criados;
 void mostrarTabuleiro(char tabuleiro[TAMA][TAMA], int mostrarNavios) {
     //aqui mostra a parte de cima da tabela
     printf("  0 1 2 3 4 5 6 7\n");
@@ -76,7 +76,6 @@ int preencherMatriz(int xi, int multiplicadorX, int yi, int multiplicadorY, int 
     printf("\n");
     return 1;
 }
-
 //funcao para mostrar o texto e receber xi, yi e direcao
 int mostraTexto(int i, int tamNavio, int *xi, int *yi, char *d){
     printf("\n");
@@ -98,7 +97,6 @@ int mostraTexto(int i, int tamNavio, int *xi, int *yi, char *d){
     printf("\n");
     return 1;
 }
-
 //funcao para checar para ver se a direçao é aceita e se o navio cabe no tabuleiro
 int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int yi, int tamNavio){
     
@@ -225,8 +223,7 @@ int atacar(char tabuleiro[TAMA][TAMA], int x , int y){
     }
     return 0;
 }
-
-//função para contar quantos Navios restão
+//função para contar quantos Navios restam no tabuleiro;
 int contNavios(char tabuleiro[TAMA][TAMA]){
     int contador = 0;
     for (int i = 0; i < TAMA; i++){
@@ -307,9 +304,9 @@ int menu(){
                 printf("Cordenadas Invalidas.\n");
                 continue;
             }
-            //verifica a vez de jogar se for do 1 ele entrar aqui;
+            //verifica a vez de jogar se for do jogador 1 ele entrar aqui;
             if (jogador == 1){
-                //verifica se no tabuleiro do jogador 2 voce 1 ja atacou o mar ou acertou um navio;
+                //verifica se no tabuleiro do jogador 2 voce ja atacou o mar ou acertou um navio;
                 if (tabuleiro2[x][y] == 'X' || tabuleiro2[x][y] == 'O'){
                     printf("Posicao ja atacada.\n");
                     continue;
@@ -323,13 +320,15 @@ int menu(){
                 if (contNavios(tabuleiro2) == 0){
                     printf("\nJogador 1 venceu\n");
                     fim = 1;
-                }     
+                }  
+            //jogador 2:   
             }else{
                 if (tabuleiro1[x][y] == 'X' || tabuleiro1[x][y] == 'O'){
                     printf("Posicao ja atacada.\n");
                     continue;
                 }
                 //aqui chama a funcao atacar a funcao ataca no tabuleiro 2 na posição dita pelo usuario x e y.
+
                 if (atacar(tabuleiro1, x ,y)){
                     printf("BOOM! Voce acertou!\n");
                 }else{
