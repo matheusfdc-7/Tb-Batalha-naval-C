@@ -25,11 +25,11 @@ void mostrarTabuleiro(char tabuleiro[TAMA][TAMA], int mostrarNavios) {
     printf("  0 1 2 3 4 5 6 7\n");
     
     for (int i = 0; i < TAMA; i++) {
-        //exibe o número da linha antes de imprimir os elementos.
+        //exibe o numero da linha antes de imprimir os elementos.
         printf("%d ", i);
         
         for (int j = 0; j < TAMA; j++) {
-            //verificar se na posição tem um navio N se tiver ele esconde o navio com "_"
+            //verificar se na posicao tem um navio N se tiver ele esconde o navio com "_"
             if (!mostrarNavios && tabuleiro[i][j] == 'N') {
                 printf("- ");
             } else {
@@ -57,7 +57,7 @@ int preencherMatriz(int xi, int multiplicadorX, int yi, int multiplicadorY, int 
         
     } 
     
-    //checa para ver se todos os epaços estão livres
+    //checa para ver se todos os epaços estao livres
     for(int i = 0; i < tamNavio; i++){
         int x = posicao[i][0]; //pega os valores de x de cada espaço que o navio ocupa
         int y = posicao[i][1]; //pega os valores de y de cada espaço que o navio ocupa
@@ -66,7 +66,7 @@ int preencherMatriz(int xi, int multiplicadorX, int yi, int multiplicadorY, int 
         }
     }
     
-    //preenche os espaços
+    //preenche os espacos
     for(int i = 0; i < tamNavio; i++){
         int x = posicao[i][0];
         int y = posicao[i][1];
@@ -79,7 +79,7 @@ int preencherMatriz(int xi, int multiplicadorX, int yi, int multiplicadorY, int 
     return 1;
 }
 
-//funcao para checar se a direçao eh aceita e se o navio cabe no tabuleiro
+//funcao para checar para ver se a direçao eh aceita e se o navio cabe no tabuleiro
 int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int yi, int tamNavio){
     
     //se for para cima
@@ -87,14 +87,15 @@ int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int y
         *multiplicadorX = -1; //vai multiplicar a soma para diminuir o x
         *multiplicadorY = 0; //nao vai influenciar
         
-        //checa se o navio nao saiu do tabuleiro
-        if( (xi - tamNavio + 1) < TAMA ){
+        //checa para ver se o navio nao saiu do tabuleiro
+        if( (xi - tamNavio + 1) >= 0 ){
             return 1;
         } else {
             return 0;
         }
     }
 
+    //se for para baixo
     if(d == 's' || d == 'S'){
         *multiplicadorX = 1; //vai multiplicar a soma para aumentar o x
         *multiplicadorY = 0;
@@ -105,7 +106,8 @@ int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int y
             return 0;
         }
     }
-    
+
+    // se for para a direita
     if(d == 'd' || d == 'D'){
         *multiplicadorX = 0;
         *multiplicadorY = 1; //vai multiplicar a soma para aumentar o y
@@ -116,7 +118,8 @@ int checkDirecao(char d, int *multiplicadorX, int *multiplicadorY, int xi, int y
             return 0;
         }
     }
-    
+
+    // se ofr para esquerda
     if(d == 'a' || d == 'A'){
         *multiplicadorX = 0;
         *multiplicadorY = -1; //vai multiplicar a soma para diminuir o y
@@ -145,7 +148,6 @@ int checaPosicaoValida (int x, int y, char tabuleiro[TAMA][TAMA], int memoria[64
             }
         }
         
-        
         return 0;
     } 
     
@@ -160,7 +162,6 @@ int checaPosicaoValida (int x, int y, char tabuleiro[TAMA][TAMA], int memoria[64
                 return 1;
             }
         }
-
         
         return 0;
     }
@@ -237,7 +238,7 @@ void colocarNaviosCpu(char tabuleiro[TAMA][TAMA]){
     }
 }
 
-//função para atacar, ele vai pecorrer o tabuleiro e verificar onde tem um Navio "N" se tizer marca X e retorna 1 indicando que o ataque deu certo;
+//função para atacar ele vai pecorrer o tabuleiro e verificar onde tem um Navio "N" se tizer marca X e retorna 1 indicando que o ataque deu certo;
 int atacar(char tabuleiro[TAMA][TAMA], int x , int y){
     if (tabuleiro[x][y]== 'N'){
         tabuleiro[x][y] = 'X';
@@ -381,7 +382,7 @@ int logicaCPU(char tabuleiro[TAMA][TAMA]){
         return 0;
 }
 
-//função para contar quantos Navios restam no tabuleiro
+//função para contar quantos Navios restão no tabuleiro;
 int contNavios(char tabuleiro[TAMA][TAMA]){
     int contador = 0;
     for (int i = 0; i < TAMA; i++){
